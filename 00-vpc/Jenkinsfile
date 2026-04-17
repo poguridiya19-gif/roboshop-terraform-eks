@@ -1,157 +1,157 @@
-// pipeline {
-//     // these are pre-build sections
-//     agent {
-//         node {
-//             label "AGENT-1"
-//         }
-//     }
-//     environment {
-//         COURSE = "Jenkins"
-//     }
-//     options {
-//         timeout(time: 60, unit: 'MINUTES')
-//         disableConcurrentBuilds()
-//         ansiColor('xterm')
-//     }
-//     // these is build section
-//     stages {
-//         stage('Init') {
-//             steps {
-//                 script{
-//                     withAWS(region:'us-east-1',credentials:'aws-creds'){
-//                         sh """
-//                             pwd
-//                             cd 00-vpc
-//                             terraform init
-//                         """
-//                     }
-//                 }
-//             }
-//         }
-//         stage('Plan') {
-//             steps {
-//                 script{
-//                     withAWS(region:'us-east-1',credentials:'aws-creds'){
-//                         sh """
-//                             cd 00-vpc
-//                             terraform plan
-//                         """
-//                     }
-//                 }
-//             }
-//         }
-//         stage('Deploy') {
-//            steps{
-//                 script{
-//                     withAWS(region:'us-east-1',credentials:'aws-creds'){
-//                         sh """
-//                             cd 00-vpc
-//                             terraform apply -auto-approve
-//                         """
-//                     }
-//                 }
-//             }
-//         }
-//         stage('Trigger SG') {
-//             steps{
-//                 script{
-//                     build job: '10-sg',
-//                         wait: false, //wait for completion
-//                         propagate: false //propagate status
-//                 }
-//             }
-//         }
-//     }
-//     post{
-//         always{
-//             echo 'I will always say hello again!'
-//             cleanWs()
-//         }
-//         success {
-//             echo 'I will run if success'
-//         }
-//         failure{
-//             echo 'I will run if failure'
-//         }
-//         aborted{
-//             echo 'pipeline is aborted'
-//         }
-//     }
-// }
-
 pipeline {
+    // these are pre-build sections
     agent {
         node {
             label "AGENT-1"
         }
     }
-
     environment {
         COURSE = "Jenkins"
     }
-
     options {
         timeout(time: 60, unit: 'MINUTES')
         disableConcurrentBuilds()
         ansiColor('xterm')
     }
-
+    // these is build section
     stages {
-
         stage('Init') {
             steps {
-                dir('00-vpc') {
-                    withAWS(region:'us-east-1', credentials:'aws-creds') {
-                        sh 'terraform init'
+                script{
+                    withAWS(region:'us-east-1',credentials:'aws-creds'){
+                        sh """
+                            pwd
+                            cd 00-vpc
+                            terraform init
+                        """
                     }
                 }
             }
         }
-
         stage('Plan') {
             steps {
-                dir('00-vpc') {
-                    withAWS(region:'us-east-1', credentials:'aws-creds') {
-                        sh 'terraform plan'
+                script{
+                    withAWS(region:'us-east-1',credentials:'aws-creds'){
+                        sh """
+                            cd 00-vpc
+                            terraform plan
+                        """
                     }
                 }
             }
         }
-
         stage('Deploy') {
-            steps {
-                dir('00-vpc') {
-                    withAWS(region:'us-east-1', credentials:'aws-creds') {
-                        sh 'terraform apply -auto-approve'
+           steps{
+                script{
+                    withAWS(region:'us-east-1',credentials:'aws-creds'){
+                        sh """
+                            cd 00-vpc
+                            terraform apply -auto-approve
+                        """
                     }
                 }
             }
         }
-
         stage('Trigger SG') {
-            steps {
-                build job: '10-sg',
-                      wait: false,
-                      propagate: false
+            steps{
+                script{
+                    build job: '10-sg',
+                        wait: false, //wait for completion
+                        propagate: false //propagate status
+                }
             }
         }
     }
-
-    post {
-        always {
+    post{
+        always{
             echo 'I will always say hello again!'
             cleanWs()
         }
         success {
             echo 'I will run if success'
         }
-        failure {
+        failure{
             echo 'I will run if failure'
         }
-        aborted {
+        aborted{
             echo 'pipeline is aborted'
         }
     }
 }
+
+// pipeline {
+//     agent {
+//         node {
+//             label "AGENT-1"
+//         }
+//     }
+
+//     environment {
+//         COURSE = "Jenkins"
+//     }
+
+//     options {
+//         timeout(time: 60, unit: 'MINUTES')
+//         disableConcurrentBuilds()
+//         ansiColor('xterm')
+//     }
+
+//     stages {
+
+//         stage('Init') {
+//             steps {
+//                 dir('00-vpc') {
+//                     withAWS(region:'us-east-1', credentials:'aws-creds') {
+//                         sh 'terraform init'
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Plan') {
+//             steps {
+//                 dir('00-vpc') {
+//                     withAWS(region:'us-east-1', credentials:'aws-creds') {
+//                         sh 'terraform plan'
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Deploy') {
+//             steps {
+//                 dir('00-vpc') {
+//                     withAWS(region:'us-east-1', credentials:'aws-creds') {
+//                         sh 'terraform apply -auto-approve'
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Trigger SG') {
+//             steps {
+//                 build job: '10-sg',
+//                       wait: false,
+//                       propagate: false
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             echo 'I will always say hello again!'
+//             cleanWs()
+//         }
+//         success {
+//             echo 'I will run if success'
+//         }
+//         failure {
+//             echo 'I will run if failure'
+//         }
+//         aborted {
+//             echo 'pipeline is aborted'
+//         }
+//     }
+// }
 
 
