@@ -1,22 +1,140 @@
-pipeline{
-    agent{
-        node{
+// pipeline{
+//     agent{
+//         node{
+//             label 'AGENT-1'
+//         }
+//     }
+//     environment{
+//         COURSE = "Jenkins"
+//     }
+//     options {
+//         timeout(time: 60, unit: 'MINUTES')
+//         disableConcurrentBuilds()
+//         ansiColor('xterm')
+//     }
+//     stages{
+//         stage('Init'){
+//             steps{
+//                 script{
+//                     withAWS(region:'us-east-1',credentials:'aws-creds'){
+//                         sh """
+//                             cd 10-sg
+//                             terraform init
+//                         """
+//                     }
+//                 }
+//             }
+//         }
+//         stage('Plan'){
+//             steps{
+//                 script{
+//                     withAWS(region:'us-east-1',credentials:'aws-creds'){
+//                         sh """
+//                             cd 10-sg
+//                             terraform plan
+//                         """
+//                     }
+//                 }
+//             }
+//         }
+//         stage('Deploy'){
+//             steps{
+//                 script{
+//                     withAWS(region:'us-east-1',credentials:'aws-creds'){
+//                         sh """
+//                             cd 10-sg
+//                             terraform apply -auto-approve
+//                         """
+//                     }
+//                 }
+//             }
+//         }
+//         stage('Parallel Trigger'){
+//             parallel {
+//                 stage('Bastion'){
+//                     steps {
+//                         script {
+//                             build job: '20-bastion',
+//                                 wait: false, //wait for completion
+//                                 propagate: false // propagate status
+//                         }
+//                     }
+//                 }
+//             }
+//             stage('SG Rules'){
+//                 steps{
+//                     script{
+//                         build job: '30-sg-rules',
+//                             wait: false, // Wait for completion
+//                             propagate: false // Propagate status
+//                     }
+//                 }
+//             }
+//             stage('ECR'){
+//                 steps {
+//                     script {
+//                         build job: '40-ecr',
+//                             wait: false, // Wait for completion
+//                             propagate: false // Propagate status
+//                     }
+//                 }
+//             }
+//             stage('ACM'){
+//                 steps {
+//                     script {
+//                         build job: '70-acm',
+//                             wait: true, // Wait for completion
+//                             propagate: false // Propagate status
+//                     }
+//                 }
+//             }
+//         }
+//     }      
+//     post{
+//         always{
+//             echo 'I will always say Hello again!'
+//             cleanWs()
+//         }
+//         success {
+//             echo 'I will run if success'
+//         }
+//         failure {
+//             echo 'I will run if failure'
+//         }
+//         aborted {
+//             echo 'pipeline is aborted'
+//         }
+//     }
+// }
+pipeline {
+    // These are pre-build sections
+    agent {
+        node {
             label 'AGENT-1'
         }
     }
-    environment{
+    environment {
         COURSE = "Jenkins"
     }
     options {
-        timeout(time: 60, unit: 'MINUTES')
+        timeout(time: 60, unit: 'MINUTES') 
         disableConcurrentBuilds()
         ansiColor('xterm')
     }
-    stages{
-        stage('Init'){
-            steps{
+    
+    // parameters {
+    //     string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+    //     text(name: 'BIOGRAPHY', defaultValue: '', description: 'Enter some information about the person')
+    //     booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Toggle this value')
+    //     choice(name: 'CHOICE', choices: ['One', 'Two', 'Three'], description: 'Pick something')
+    //     password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
+    // }
+    // This is build section
+    stages {
+        stage('Init') {
+            steps {
                 script{
-                    withAWS(region:'us-east-1',credentials:'aws-creds'){
+                    withAWS(region:'us-east-1',credentials:'aws-creds') {
                         sh """
                             cd 10-sg
                             terraform init
@@ -25,10 +143,10 @@ pipeline{
                 }
             }
         }
-        stage('Plan'){
-            steps{
+        stage('Plan') {
+            steps {
                 script{
-                    withAWS(region:'us-east-1',credentials:'aws-creds'){
+                    withAWS(region:'us-east-1',credentials:'aws-creds') {
                         sh """
                             cd 10-sg
                             terraform plan
@@ -37,10 +155,11 @@ pipeline{
                 }
             }
         }
-        stage('Deploy'){
-            steps{
+        stage('Deploy') {
+                      
+            steps {
                 script{
-                    withAWS(region:'us-east-1',credentials:'aws-creds'){
+                    withAWS(region:'us-east-1',credentials:'aws-creds') {
                         sh """
                             cd 10-sg
                             terraform apply -auto-approve
@@ -49,47 +168,66 @@ pipeline{
                 }
             }
         }
-        stage('Parallel Trigger'){
+        stage('Parellel Trigger'){
             parallel {
                 stage('Bastion'){
                     steps {
                         script {
                             build job: '20-bastion',
-                                wait: false, //wait for completion
-                                propagate: false // propagate status
+                                wait: false, // Wait for completion
+                                propagate: false // Propagate status
+                        }
+                    }
+                }
+                stage('SG Rules'){
+                    steps {
+                        script {
+                            build job: '30-sg-rules',
+                                wait: false, // Wait for completion
+                                propagate: false // Propagate status
+                        }
+                    }
+                }
+                stage('ECR'){
+                    steps {
+                        script {
+                            build job: '40-ecr',
+                                wait: false, // Wait for completion
+                                propagate: false // Propagate status
+                        }
+                    }
+                }
+                stage('ACM'){
+                    steps {
+                        script {
+                            build job: '70-acm',
+                                wait: true, // Wait for completion
+                                propagate: false // Propagate status
+                        }
+                    }
+                }
+                stage('EKS'){
+                    steps {
+                        script {
+                            build job: '90-eks',
+                                wait: false, // Wait for completion
+                                propagate: false // Propagate status
                         }
                     }
                 }
             }
-            stage('SG Rules'){
-                steps{
-                    script{
-                        build job: '30-sg-rules',
-                            wait: false, // Wait for completion
-                            propagate: false // Propagate status
-                    }
-                }
-            }
-            stage('ECR'){
-                steps {
-                    script {
-                        build job: '40-ecr',
-                            wait: false, // Wait for completion
-                            propagate: false // Propagate status
-                    }
-                }
-            }
-            stage('ACM'){
-                steps {
-                    script {
-                        build job: '70-acm',
-                            wait: true, // Wait for completion
-                            propagate: false // Propagate status
-                    }
+        }
+        stage('ALB'){
+            steps {
+                script {
+                    build job: '80-frontend-alb',
+                        wait: false, // Wait for completion
+                        propagate: false // Propagate status
                 }
             }
         }
-    }      
+
+    }
     post{
         always{
             echo 'I will always say Hello again!'
