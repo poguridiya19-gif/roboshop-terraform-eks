@@ -8,12 +8,13 @@ terraform {
 
   backend "s3" {
     bucket = "remote-state-pogur-dev"
-    key    = "roboshop-eks-sg"
+    key = "roboshop-eks-bastion"
     region = "us-east-1"
     use_lockfile = true
-    encrypt = true
+    encrypt =  true
   }
 }
+
 
 provider "aws" {
   region = "us-east-1"

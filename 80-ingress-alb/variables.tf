@@ -6,10 +6,10 @@ variable "environment" {
     default = "dev"
 }
 
-variable "domain_name" {
-    default = "poguri.fun"
+variable "zone_id" {
+    default = "Z0626606ZLZ3TG4RMXQL"
 }
 
-variable "zone_id"{
-    default = "Z0626606ZLZ3TG4RMXQL"
+variable "domain_name" {
+    default = "poguri.fun"
 }
