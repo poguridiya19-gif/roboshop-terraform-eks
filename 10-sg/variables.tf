@@ -11,13 +11,13 @@ variable "sg_names" {
         # databases
         "mongodb", "redis", "mysql", "rabbitmq",
         # backend
-        # "catalogue", "user", "cart", "shipping", "payment",
+        "catalogue", "user", "cart", "shipping", "payment",
         # frontend
-        # "frontend",
+        "frontend",
         # bastion
         "bastion",
         # frontend load balancer
-        "ingress_alb" ,
+        "frontend_alb" ,
         # backened load balancer
         # "backend_alb" ,
 

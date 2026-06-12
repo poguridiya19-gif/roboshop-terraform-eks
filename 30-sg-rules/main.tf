@@ -151,9 +151,9 @@ resource "aws_security_group_rule" "mysql_bastion" {
 # }
 
 ##### Frontend ALB SG RUles #####
-resource "aws_security_group_rule" "ingress_alb_public" {
+resource "aws_security_group_rule" "frontend_alb_public" {
   type = "ingress"
-  security_group_id = local.ingress_alb_sg_id
+  security_group_id = local.frontend_alb_sg_id
   cidr_blocks = ["0.0.0.0/0"]
   from_port = 443
   protocol = "tcp"

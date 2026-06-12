@@ -6,7 +6,7 @@ module "sg" {
   sg_name = var.sg_names[count.index]
   sg_description = "Created for ${var.sg_names[count.index]}"
   # vpc_id = local.vpc_id
-  vpc_id = "vpc-0f960169016e45e06"
+  vpc_id = "vpc-01dd606dcc1a371ec"
 }
 
 
